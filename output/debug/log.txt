@@ -1,0 +1,314 @@
+id : debug
+pretrain : False
+tasker : blstm_tasker
+use_loss_meta : True
+use_loss_taskclassifier : False
+use_loss_globalclassifier : False
+use_loss_infoNCE : False
+use_loss_infoNCE_neg : False
+use_loss_sup_con : False
+use_mlp : False
+use_mlp_only_q : False
+memory_size : 256
+param_momentum : 0.999
+temperature : 0.07
+max_epoch : 200
+shot : 1
+query : 15
+train_way : 5
+test_way : 5
+num_task : 6
+epoch 1, train 30/600, L_meta=1.7288, L_globalcls=4.2615, L_taskcls=4.5970, infoNCE=2.9639, infoNCE_neg=2.6778, L_supcon=3.2603
+loss(1.7288) = 1.0*loss_meta(1.7288)
+Sample method predicted: 82, GT: 64, False
+epoch 1, train 60/600, L_meta=1.6323, L_globalcls=4.2278, L_taskcls=4.6172, infoNCE=3.7238, infoNCE_neg=3.3766, L_supcon=4.0438
+loss(1.6323) = 1.0*loss_meta(1.6323)
+Sample method predicted: 78, GT: 9, False
+epoch 1, train 90/600, L_meta=1.5692, L_globalcls=4.1781, L_taskcls=4.6044, infoNCE=3.9841, infoNCE_neg=3.6434, L_supcon=4.4272
+loss(1.5692) = 1.0*loss_meta(1.5692)
+Sample method predicted: 82, GT: 84, False
+epoch 1, train 120/600, L_meta=1.5259, L_globalcls=4.1636, L_taskcls=4.5987, infoNCE=4.0537, infoNCE_neg=3.7560, L_supcon=4.8268
+loss(1.5259) = 1.0*loss_meta(1.5259)
+Sample method predicted: 78, GT: 15, False
+epoch 1, train 150/600, L_meta=1.5716, L_globalcls=4.2389, L_taskcls=4.6188, infoNCE=4.5111, infoNCE_neg=4.1260, L_supcon=5.0440
+loss(1.5716) = 1.0*loss_meta(1.5716)
+Sample method predicted: 76, GT: 27, False
+epoch 1, train 180/600, L_meta=1.5614, L_globalcls=4.1707, L_taskcls=4.5876, infoNCE=4.5868, infoNCE_neg=4.2297, L_supcon=5.2868
+loss(1.5614) = 1.0*loss_meta(1.5614)
+Sample method predicted: 78, GT: 22, False
+epoch 1, train 210/600, L_meta=1.5180, L_globalcls=4.1722, L_taskcls=4.6208, infoNCE=4.9007, infoNCE_neg=4.5619, L_supcon=5.5377
+loss(1.5180) = 1.0*loss_meta(1.5180)
+Sample method predicted: 82, GT: 97, False
+epoch 1, train 240/600, L_meta=1.4314, L_globalcls=4.2293, L_taskcls=4.6006, infoNCE=4.8490, infoNCE_neg=4.4617, L_supcon=5.7226
+loss(1.4314) = 1.0*loss_meta(1.4314)
+Sample method predicted: 78, GT: 14, False
+epoch 1, train 270/600, L_meta=1.4642, L_globalcls=4.3159, L_taskcls=4.5901, infoNCE=4.8556, infoNCE_neg=4.5325, L_supcon=5.7695
+loss(1.4642) = 1.0*loss_meta(1.4642)
+Sample method predicted: 78, GT: 20, False
+epoch 1, train 300/600, L_meta=1.5286, L_globalcls=4.1598, L_taskcls=4.6460, infoNCE=5.0898, infoNCE_neg=4.6615, L_supcon=5.6264
+loss(1.5286) = 1.0*loss_meta(1.5286)
+Sample method predicted: 78, GT: 37, False
+epoch 1, train 330/600, L_meta=1.4770, L_globalcls=4.2024, L_taskcls=4.6085, infoNCE=5.0664, infoNCE_neg=4.7181, L_supcon=5.6394
+loss(1.4770) = 1.0*loss_meta(1.4770)
+Sample method predicted: 76, GT: 15, False
+epoch 1, train 360/600, L_meta=1.3451, L_globalcls=4.2284, L_taskcls=4.6089, infoNCE=5.1934, infoNCE_neg=4.8513, L_supcon=5.5690
+loss(1.3451) = 1.0*loss_meta(1.3451)
+Sample method predicted: 78, GT: 2, False
+epoch 1, train 390/600, L_meta=1.5509, L_globalcls=4.2885, L_taskcls=4.6026, infoNCE=5.2539, infoNCE_neg=4.8748, L_supcon=5.5927
+loss(1.5509) = 1.0*loss_meta(1.5509)
+Sample method predicted: 78, GT: 71, False
+epoch 1, train 420/600, L_meta=1.3944, L_globalcls=4.3076, L_taskcls=4.6158, infoNCE=5.3674, infoNCE_neg=4.9845, L_supcon=5.5555
+loss(1.3944) = 1.0*loss_meta(1.3944)
+Sample method predicted: 78, GT: 57, False
+id : debug
+pretrain : False
+tasker : blstm_tasker
+use_loss_meta : True
+use_loss_taskclassifier : False
+use_loss_globalclassifier : False
+use_loss_infoNCE : False
+use_loss_infoNCE_neg : False
+use_loss_sup_con : False
+use_mlp : False
+use_mlp_only_q : False
+memory_size : 256
+param_momentum : 0.999
+temperature : 0.07
+max_epoch : 200
+shot : 1
+query : 15
+train_way : 5
+test_way : 5
+num_task : 6
+id : debug
+pretrain : False
+tasker : blstm_tasker
+use_loss_meta : True
+use_loss_taskclassifier : False
+use_loss_globalclassifier : False
+use_loss_infoNCE : False
+use_loss_infoNCE_neg : False
+use_loss_sup_con : False
+use_mlp : False
+use_mlp_only_q : False
+memory_size : 256
+param_momentum : 0.999
+temperature : 0.07
+max_epoch : 200
+shot : 1
+query : 15
+train_way : 5
+test_way : 5
+num_task : 6
+id : debug
+pretrain : False
+tasker : blstm_tasker
+use_loss_meta : True
+use_loss_taskclassifier : False
+use_loss_globalclassifier : False
+use_loss_infoNCE : False
+use_loss_infoNCE_neg : False
+use_loss_sup_con : False
+use_mlp : False
+use_mlp_only_q : False
+memory_size : 256
+param_momentum : 0.999
+temperature : 0.07
+max_epoch : 200
+shot : 1
+query : 15
+train_way : 5
+test_way : 5
+num_task : 6
+id : debug
+pretrain : False
+tasker : blstm_tasker
+use_loss_meta : True
+use_loss_taskclassifier : False
+use_loss_globalclassifier : False
+use_loss_infoNCE : False
+use_loss_infoNCE_neg : False
+use_loss_sup_con : False
+use_mlp : False
+use_mlp_only_q : False
+memory_size : 256
+param_momentum : 0.999
+temperature : 0.07
+max_epoch : 200
+shot : 1
+query : 15
+train_way : 5
+test_way : 5
+num_task : 6
+epoch 1, train 30/600, L_meta=1.7288, L_globalcls=4.1593, L_taskcls=4.5970, infoNCE=2.9639, infoNCE_neg=2.6778, L_supcon=3.2603
+loss(1.7288) = 1.0*loss_meta(1.7288)
+Sample method predicted: 82, GT: 64, False
+epoch 1, train 60/600, L_meta=1.6323, L_globalcls=4.1528, L_taskcls=4.6172, infoNCE=3.7238, infoNCE_neg=3.3766, L_supcon=4.0438
+loss(1.6323) = 1.0*loss_meta(1.6323)
+Sample method predicted: 78, GT: 9, False
+epoch 1, train 90/600, L_meta=1.5692, L_globalcls=4.1535, L_taskcls=4.6044, infoNCE=3.9841, infoNCE_neg=3.6434, L_supcon=4.4272
+loss(1.5692) = 1.0*loss_meta(1.5692)
+Sample method predicted: 82, GT: 84, False
+epoch 1, train 120/600, L_meta=1.5259, L_globalcls=4.1587, L_taskcls=4.5987, infoNCE=4.0537, infoNCE_neg=3.7560, L_supcon=4.8268
+loss(1.5259) = 1.0*loss_meta(1.5259)
+Sample method predicted: 78, GT: 15, False
+epoch 1, train 150/600, L_meta=1.5716, L_globalcls=4.1591, L_taskcls=4.6188, infoNCE=4.5111, infoNCE_neg=4.1260, L_supcon=5.0440
+loss(1.5716) = 1.0*loss_meta(1.5716)
+Sample method predicted: 76, GT: 27, False
+epoch 1, train 180/600, L_meta=1.5614, L_globalcls=4.1547, L_taskcls=4.5876, infoNCE=4.5868, infoNCE_neg=4.2297, L_supcon=5.2868
+loss(1.5614) = 1.0*loss_meta(1.5614)
+Sample method predicted: 78, GT: 22, False
+epoch 1, train 210/600, L_meta=1.5180, L_globalcls=4.1542, L_taskcls=4.6208, infoNCE=4.9007, infoNCE_neg=4.5619, L_supcon=5.5377
+loss(1.5180) = 1.0*loss_meta(1.5180)
+Sample method predicted: 82, GT: 97, False
+epoch 1, train 240/600, L_meta=1.4314, L_globalcls=4.1592, L_taskcls=4.6006, infoNCE=4.8490, infoNCE_neg=4.4617, L_supcon=5.7226
+loss(1.4314) = 1.0*loss_meta(1.4314)
+Sample method predicted: 78, GT: 14, False
+epoch 1, train 270/600, L_meta=1.4642, L_globalcls=4.1633, L_taskcls=4.5901, infoNCE=4.8556, infoNCE_neg=4.5325, L_supcon=5.7695
+loss(1.4642) = 1.0*loss_meta(1.4642)
+Sample method predicted: 78, GT: 20, False
+epoch 1, train 300/600, L_meta=1.5286, L_globalcls=4.1544, L_taskcls=4.6460, infoNCE=5.0898, infoNCE_neg=4.6615, L_supcon=5.6264
+loss(1.5286) = 1.0*loss_meta(1.5286)
+Sample method predicted: 78, GT: 37, False
+epoch 1, train 330/600, L_meta=1.4770, L_globalcls=4.1580, L_taskcls=4.6085, infoNCE=5.0664, infoNCE_neg=4.7181, L_supcon=5.6394
+loss(1.4770) = 1.0*loss_meta(1.4770)
+Sample method predicted: 76, GT: 15, False
+epoch 1, train 360/600, L_meta=1.3451, L_globalcls=4.1567, L_taskcls=4.6089, infoNCE=5.1934, infoNCE_neg=4.8513, L_supcon=5.5690
+loss(1.3451) = 1.0*loss_meta(1.3451)
+Sample method predicted: 78, GT: 2, False
+epoch 1, train 390/600, L_meta=1.5509, L_globalcls=4.1581, L_taskcls=4.6026, infoNCE=5.2539, infoNCE_neg=4.8748, L_supcon=5.5927
+loss(1.5509) = 1.0*loss_meta(1.5509)
+Sample method predicted: 78, GT: 71, False
+epoch 1, train 420/600, L_meta=1.3944, L_globalcls=4.1655, L_taskcls=4.6158, infoNCE=5.3674, infoNCE_neg=4.9845, L_supcon=5.5555
+loss(1.3944) = 1.0*loss_meta(1.3944)
+Sample method predicted: 78, GT: 57, False
+epoch 1, train 450/600, L_meta=1.3863, L_globalcls=4.1631, L_taskcls=4.6060, infoNCE=5.3188, infoNCE_neg=4.9596, L_supcon=5.5440
+loss(1.3863) = 1.0*loss_meta(1.3863)
+Sample method predicted: 78, GT: 64, False
+epoch 1, train 480/600, L_meta=1.4793, L_globalcls=4.1614, L_taskcls=4.5760, infoNCE=5.3362, infoNCE_neg=4.9667, L_supcon=5.5303
+loss(1.4793) = 1.0*loss_meta(1.4793)
+Sample method predicted: 82, GT: 73, False
+epoch 1, train 510/600, L_meta=1.4392, L_globalcls=4.1580, L_taskcls=4.6254, infoNCE=5.3675, infoNCE_neg=5.0385, L_supcon=5.5369
+loss(1.4392) = 1.0*loss_meta(1.4392)
+Sample method predicted: 78, GT: 62, False
+epoch 1, train 540/600, L_meta=1.4887, L_globalcls=4.1556, L_taskcls=4.6112, infoNCE=5.4531, infoNCE_neg=5.0623, L_supcon=5.5474
+loss(1.4887) = 1.0*loss_meta(1.4887)
+Sample method predicted: 78, GT: 89, False
+epoch 1, train 570/600, L_meta=1.4291, L_globalcls=4.1590, L_taskcls=4.6369, infoNCE=5.4199, infoNCE_neg=5.0128, L_supcon=5.5376
+loss(1.4291) = 1.0*loss_meta(1.4291)
+Sample method predicted: 78, GT: 34, False
+epoch 1, train 600/600, L_meta=1.4912, L_globalcls=4.1615, L_taskcls=4.5744, infoNCE=5.4400, infoNCE_neg=5.0975, L_supcon=5.5564
+loss(1.4912) = 1.0*loss_meta(1.4912)
+Sample method predicted: 89, GT: 36, False
+Train set few-shot acc=37.0756±1.9135
+ETA:58s/3.2h
+epoch 2, train 30/600, L_meta=1.4922, L_globalcls=4.1591, L_taskcls=4.5929, infoNCE=5.3878, infoNCE_neg=4.9981, L_supcon=5.5302
+loss(1.4922) = 1.0*loss_meta(1.4922)
+Sample method predicted: 78, GT: 29, False
+epoch 2, train 60/600, L_meta=1.4129, L_globalcls=4.1493, L_taskcls=4.6423, infoNCE=5.4004, infoNCE_neg=5.0262, L_supcon=5.5481
+loss(1.4129) = 1.0*loss_meta(1.4129)
+Sample method predicted: 78, GT: 66, False
+epoch 2, train 90/600, L_meta=1.4800, L_globalcls=4.1575, L_taskcls=4.6091, infoNCE=5.4586, infoNCE_neg=5.1111, L_supcon=5.5252
+loss(1.4800) = 1.0*loss_meta(1.4800)
+Sample method predicted: 78, GT: 35, False
+epoch 2, train 120/600, L_meta=1.3383, L_globalcls=4.1578, L_taskcls=4.6029, infoNCE=5.4226, infoNCE_neg=5.0418, L_supcon=5.5533
+loss(1.3383) = 1.0*loss_meta(1.3383)
+Sample method predicted: 78, GT: 66, False
+epoch 2, train 150/600, L_meta=1.3192, L_globalcls=4.1571, L_taskcls=4.5902, infoNCE=5.4931, infoNCE_neg=5.0510, L_supcon=5.5140
+loss(1.3192) = 1.0*loss_meta(1.3192)
+Sample method predicted: 78, GT: 62, False
+epoch 2, train 180/600, L_meta=1.4974, L_globalcls=4.1523, L_taskcls=4.6093, infoNCE=5.4625, infoNCE_neg=5.1160, L_supcon=5.5414
+loss(1.4974) = 1.0*loss_meta(1.4974)
+Sample method predicted: 82, GT: 97, False
+epoch 2, train 210/600, L_meta=1.4075, L_globalcls=4.1657, L_taskcls=4.6000, infoNCE=5.5410, infoNCE_neg=5.1773, L_supcon=5.5413
+loss(1.4075) = 1.0*loss_meta(1.4075)
+Sample method predicted: 76, GT: 7, False
+epoch 2, train 240/600, L_meta=1.2807, L_globalcls=4.1636, L_taskcls=4.6034, infoNCE=5.4096, infoNCE_neg=5.0766, L_supcon=5.5236
+loss(1.2807) = 1.0*loss_meta(1.2807)
+Sample method predicted: 76, GT: 54, False
+epoch 2, train 270/600, L_meta=1.4873, L_globalcls=4.1518, L_taskcls=4.6409, infoNCE=5.3930, infoNCE_neg=5.0415, L_supcon=5.5405
+loss(1.4873) = 1.0*loss_meta(1.4873)
+Sample method predicted: 78, GT: 66, False
+epoch 2, train 300/600, L_meta=1.5200, L_globalcls=4.1579, L_taskcls=4.5783, infoNCE=5.4991, infoNCE_neg=5.1467, L_supcon=5.5436
+loss(1.5200) = 1.0*loss_meta(1.5200)
+Sample method predicted: 82, GT: 4, False
+epoch 2, train 330/600, L_meta=1.3942, L_globalcls=4.1650, L_taskcls=4.6035, infoNCE=5.2186, infoNCE_neg=4.8158, L_supcon=5.5009
+loss(1.3942) = 1.0*loss_meta(1.3942)
+Sample method predicted: 78, GT: 11, False
+epoch 2, train 360/600, L_meta=1.3973, L_globalcls=4.1555, L_taskcls=4.6133, infoNCE=5.4301, infoNCE_neg=5.0867, L_supcon=5.5228
+loss(1.3973) = 1.0*loss_meta(1.3973)
+Sample method predicted: 82, GT: 45, False
+epoch 2, train 390/600, L_meta=1.5451, L_globalcls=4.1555, L_taskcls=4.6052, infoNCE=5.3471, infoNCE_neg=4.9769, L_supcon=5.5427
+loss(1.5451) = 1.0*loss_meta(1.5451)
+Sample method predicted: 78, GT: 46, False
+epoch 2, train 420/600, L_meta=1.3670, L_globalcls=4.1564, L_taskcls=4.6212, infoNCE=5.2575, infoNCE_neg=4.8758, L_supcon=5.5218
+loss(1.3670) = 1.0*loss_meta(1.3670)
+Sample method predicted: 78, GT: 18, False
+epoch 2, train 450/600, L_meta=1.3056, L_globalcls=4.1580, L_taskcls=4.5497, infoNCE=5.3826, infoNCE_neg=5.0217, L_supcon=5.5422
+loss(1.3056) = 1.0*loss_meta(1.3056)
+Sample method predicted: 78, GT: 78, True
+epoch 2, train 480/600, L_meta=1.3189, L_globalcls=4.1588, L_taskcls=4.6003, infoNCE=5.2152, infoNCE_neg=4.8573, L_supcon=5.5099
+loss(1.3189) = 1.0*loss_meta(1.3189)
+Sample method predicted: 89, GT: 46, False
+epoch 2, train 510/600, L_meta=1.2647, L_globalcls=4.1552, L_taskcls=4.6079, infoNCE=5.4916, infoNCE_neg=5.1056, L_supcon=5.5379
+loss(1.2647) = 1.0*loss_meta(1.2647)
+Sample method predicted: 78, GT: 52, False
+epoch 2, train 540/600, L_meta=1.4427, L_globalcls=4.1567, L_taskcls=4.6345, infoNCE=5.3366, infoNCE_neg=4.9855, L_supcon=5.5476
+loss(1.4427) = 1.0*loss_meta(1.4427)
+Sample method predicted: 78, GT: 6, False
+epoch 2, train 570/600, L_meta=1.4799, L_globalcls=4.1563, L_taskcls=4.5886, infoNCE=5.3286, infoNCE_neg=4.9588, L_supcon=5.5167
+loss(1.4799) = 1.0*loss_meta(1.4799)
+Sample method predicted: 89, GT: 12, False
+epoch 2, train 600/600, L_meta=1.3269, L_globalcls=4.1563, L_taskcls=4.6014, infoNCE=5.2663, infoNCE_neg=4.8975, L_supcon=5.5277
+loss(1.3269) = 1.0*loss_meta(1.3269)
+Sample method predicted: 78, GT: 8, False
+Train set few-shot acc=41.6000±2.1730
+ETA:2m/3.2h
+epoch 3, train 30/600, L_meta=1.4337, L_globalcls=4.1503, L_taskcls=4.5638, infoNCE=5.4239, infoNCE_neg=5.0371, L_supcon=5.5365
+loss(1.4337) = 1.0*loss_meta(1.4337)
+Sample method predicted: 82, GT: 58, False
+epoch 3, train 60/600, L_meta=1.2790, L_globalcls=4.1635, L_taskcls=4.6210, infoNCE=5.4388, infoNCE_neg=5.0416, L_supcon=5.5223
+loss(1.2790) = 1.0*loss_meta(1.2790)
+Sample method predicted: 78, GT: 8, False
+epoch 3, train 90/600, L_meta=1.3944, L_globalcls=4.1557, L_taskcls=4.6401, infoNCE=5.3099, infoNCE_neg=4.9373, L_supcon=5.5239
+loss(1.3944) = 1.0*loss_meta(1.3944)
+Sample method predicted: 78, GT: 81, False
+epoch 3, train 120/600, L_meta=1.4396, L_globalcls=4.1568, L_taskcls=4.5762, infoNCE=5.3067, infoNCE_neg=4.9594, L_supcon=5.5229
+loss(1.4396) = 1.0*loss_meta(1.4396)
+Sample method predicted: 78, GT: 0, False
+epoch 3, train 150/600, L_meta=1.3632, L_globalcls=4.1622, L_taskcls=4.6069, infoNCE=5.3716, infoNCE_neg=5.0033, L_supcon=5.5430
+loss(1.3632) = 1.0*loss_meta(1.3632)
+Sample method predicted: 78, GT: 82, False
+epoch 3, train 180/600, L_meta=1.2856, L_globalcls=4.1613, L_taskcls=4.5978, infoNCE=5.2272, infoNCE_neg=4.8471, L_supcon=5.5319
+loss(1.2856) = 1.0*loss_meta(1.2856)
+Sample method predicted: 78, GT: 84, False
+epoch 3, train 210/600, L_meta=1.2982, L_globalcls=4.1551, L_taskcls=4.6289, infoNCE=5.3846, infoNCE_neg=5.0086, L_supcon=5.5365
+loss(1.2982) = 1.0*loss_meta(1.2982)
+Sample method predicted: 76, GT: 52, False
+epoch 3, train 240/600, L_meta=1.4437, L_globalcls=4.1589, L_taskcls=4.5995, infoNCE=5.3205, infoNCE_neg=4.8881, L_supcon=5.5074
+loss(1.4437) = 1.0*loss_meta(1.4437)
+Sample method predicted: 78, GT: 46, False
+epoch 3, train 270/600, L_meta=1.3692, L_globalcls=4.1606, L_taskcls=4.5844, infoNCE=5.3875, infoNCE_neg=5.0224, L_supcon=5.5078
+loss(1.3692) = 1.0*loss_meta(1.3692)
+Sample method predicted: 78, GT: 33, False
+epoch 3, train 300/600, L_meta=1.3669, L_globalcls=4.1518, L_taskcls=4.6254, infoNCE=5.2312, infoNCE_neg=4.8789, L_supcon=5.5205
+loss(1.3669) = 1.0*loss_meta(1.3669)
+Sample method predicted: 78, GT: 66, False
+epoch 3, train 330/600, L_meta=1.3945, L_globalcls=4.1549, L_taskcls=4.6210, infoNCE=5.5469, infoNCE_neg=5.1673, L_supcon=5.5605
+loss(1.3945) = 1.0*loss_meta(1.3945)
+Sample method predicted: 78, GT: 31, False
+epoch 3, train 360/600, L_meta=1.2840, L_globalcls=4.1589, L_taskcls=4.5892, infoNCE=5.4326, infoNCE_neg=5.1124, L_supcon=5.5293
+loss(1.2840) = 1.0*loss_meta(1.2840)
+Sample method predicted: 78, GT: 97, False
+epoch 3, train 390/600, L_meta=1.3704, L_globalcls=4.1570, L_taskcls=4.5892, infoNCE=5.3505, infoNCE_neg=4.9689, L_supcon=5.5010
+loss(1.3704) = 1.0*loss_meta(1.3704)
+Sample method predicted: 82, GT: 46, False
+epoch 3, train 420/600, L_meta=1.2197, L_globalcls=4.1556, L_taskcls=4.5747, infoNCE=5.4633, infoNCE_neg=5.0692, L_supcon=5.5464
+loss(1.2197) = 1.0*loss_meta(1.2197)
+Sample method predicted: 78, GT: 5, False
+epoch 3, train 450/600, L_meta=1.2660, L_globalcls=4.1651, L_taskcls=4.6050, infoNCE=5.3551, infoNCE_neg=4.9545, L_supcon=5.5218
+loss(1.2660) = 1.0*loss_meta(1.2660)
+Sample method predicted: 82, GT: 54, False
+epoch 3, train 480/600, L_meta=1.2846, L_globalcls=4.1565, L_taskcls=4.6209, infoNCE=5.4681, infoNCE_neg=5.1196, L_supcon=5.5497
+loss(1.2846) = 1.0*loss_meta(1.2846)
+Sample method predicted: 78, GT: 88, False
