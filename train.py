@@ -17,7 +17,7 @@ def main():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--id', type=str, default='debug')
+    parser.add_argument('--id', type=str, default='test')
     parser.add_argument('--pretrain', action='store_true')
 
     # 'mean_tasker' ; 'img0_tasker' ; 'vit_tasker' : 'blstm_tasker'
@@ -29,12 +29,15 @@ def main():
     parser.add_argument('--use_loss_infoNCE', action='store_true')
     parser.add_argument('--use_loss_infoNCE_neg', action='store_true')
     parser.add_argument('--use_loss_sup_con', action='store_true')
+    parser.add_argument('--use_loss_meta_lstm', action='store_true')
 
     parser.add_argument('--use_mlp', action='store_true')
-    parser.add_argument('--use_mlp_only_q', action='store_true')
+
+    parser.add_argument('--aug', action='store_true')
+    parser.add_argument('--aug_mix', action='store_true')
 
     parser.add_argument('--memory_size', type=int, default=256)
-    parser.add_argument('--param_momentum', type=float, default=0.999)
+    parser.add_argument('--param_momentum', type=float, default=0.99)
     parser.add_argument('--temperature', type=float, default=0.07)
 
     parser.add_argument('--max_epoch', type=int, default=200)
@@ -64,7 +67,11 @@ def main():
     train_sampler = TrainSampler(trainset.label, 100, args.train_way, args.shot + args.query, args.num_task)
     train_loader = DataLoader(dataset=trainset, batch_sampler=train_sampler, num_workers=config.num_workers, pin_memory=True)
 
-    model = MoCo(Convnet, args.tasker, args.memory_size, args.param_momentum, args.temperature).cuda()
+    
+
+    model_external = torch.load('/root/code/TBFCL/checkpoints/41_132.pth')
+
+    model = MoCo(Convnet, args.tasker, args.memory_size, args.param_momentum, args.temperature, args.use_mlp, model_external.encoder).cuda()
 
     if args.pretrain:
         load_pretrain(model, config.pretrain_conv4)
@@ -78,23 +85,24 @@ def main():
     for epoch in range(1, args.max_epoch + 1):
 
         train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger)
+        if epoch == 1 or epoch % 20 == 0:
+            val(args, epoch, val_loader, model, logger)
         model_path = os.path.join(config.save_path, args.id, 'ckpt', f'{epoch}.pth')
         torch.save(model, model_path)
         logger.log('ETA:{}/{}'.format(timer.measure(), timer.measure(epoch / args.max_epoch)))
 
-    best_acc = 0
-    best_epoch = 0
-    for epoch in range(args.max_epoch, 0, -1):
-        model_path = os.path.join(config.save_path, args.id, 'ckpt', f'{epoch}.pth')
-        model = torch.load(model_path)
-        acc = val(args, epoch, val_loader, model, logger)
-        if acc > best_acc:
-            best_acc = acc
-            best_epoch = epoch
-            torch.save(model, f'best_model_epoch{epoch}')
-        logger.log(f'best_epoch:{best_epoch}, acc={best_acc:.4f}')
-        # os.remove(model_path)
-
+    # best_acc = 0
+    # best_epoch = 0
+    # for epoch in range(args.max_epoch, 0, -1):
+    #     model_path = os.path.join(config.save_path, args.id, 'ckpt', f'{epoch}.pth')
+    #     model = torch.load(model_path)
+    #     acc = val(args, epoch, val_loader, model, logger)
+    #     if acc > best_acc or epoch == 200:
+    #         best_acc = acc
+    #         best_epoch = epoch
+    #         torch.save(model, f'best_model_epoch{epoch}')
+    #     logger.log(f'best_epoch:{best_epoch}, acc={best_acc:.4f}')
+    #     os.remove(model_path)
 
 def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
     model.train()
@@ -107,6 +115,7 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
             
             loss = 0
             loss_meta = 0
+            loss_meta_lstm = 0
             loss_taskclassifier = 0
             loss_globalclassifier = 0
             loss_infoNCE = 0
@@ -114,18 +123,37 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
             loss_sup_con = 0
             
             for t in tasks:
-                images, labels_all, path, method = [_ for _ in t]
+                images, images_aug, labels_all, path, method = [_ for _ in t]
                 label = np.array(labels_all)[:5]
                 label_category = labels_all[:5].cuda()
                 images[0] = images[0].cuda()
                 images[1] = images[1].cuda()
+                images_aug[0] = images_aug[0].cuda()
+                images_aug[1] = images_aug[1].cuda()
                 p = args.shot * args.train_way
-                s1, q1 = images[0][:p], images[0][p:]
-                s2 = images[1][:p]
+                if args.aug:
+                    s1, q1 = images_aug[0][:p], images_aug[0][p:]
+                    s2 = images_aug[1][:p]
+                elif args.aug_mix:
+                    # Randomly choose from both original and augmented images
+                    choices1 = (torch.rand(p) > 0.5).cuda()
+                    choices2 = (torch.rand(p) > 0.5).cuda()
+                    # If choice is true, take from aug, else take from original
+                    s1 = torch.where(choices1.view(-1, 1, 1, 1), images_aug[0][:p], images[0][:p])
+                    s2 = torch.where(choices2.view(-1, 1, 1, 1), images_aug[1][:p], images[1][:p])
 
-                logits_meta, labels_meta, logits_globalclassifier, logits_taskclassifier, metrics, sims, pure_index = model(s1, q1, s2, label)
+                    remaining = len(images[0]) - p
+                    choices3 = (torch.rand(remaining) > 0.5).cuda()
+                    # If choice2 is true, take from aug, else take from original
+                    q1 = torch.where(choices3.view(-1, 1, 1, 1), images_aug[0][p:], images[0][p:])
+                else:
+                    s1, q1 = images[0][:p], images[0][p:]
+                    s2 = images[1][:p]
+
+                logits_meta, labels_meta, logits_globalclassifier, logits_taskclassifier, metrics, sims, pure_index, logits_meta_lstm = model(s1, q1, s2, label)
 
                 loss_meta = loss_meta + F.cross_entropy(logits_meta, labels_meta)
+                loss_meta_lstm = loss_meta_lstm + F.cross_entropy(logits_meta_lstm, labels_meta)
                 loss_globalclassifier = loss_globalclassifier + F.cross_entropy(logits_globalclassifier, label_category)
                 loss_taskclassifier = loss_taskclassifier + F.cross_entropy(logits_taskclassifier, method[0].cuda())
 
@@ -153,7 +181,8 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
                         'loss_globalclassifier': (loss_globalclassifier/args.num_task, 1.0),
                         'loss_infoNCE': (loss_infoNCE/args.num_task, 1.0),
                         'loss_infoNCE_neg': (loss_infoNCE_neg/args.num_task, 1.0),
-                        'loss_sup_con': (loss_sup_con/args.num_task, 1.0)
+                        'loss_sup_con': (loss_sup_con/args.num_task, 1.0),
+                        'loss_meta_lstm': (loss_meta_lstm/args.num_task, 1.0)
                     }
             
             loss_terms = []
@@ -171,10 +200,10 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
             model._momentum_update_key_encoder()
             if i % 30 == 0:
                 logger.log('epoch {}, train {}/{}, L_meta={:.4f}, L_globalcls={:.4f}, L_taskcls={:.4f}, '
-                    'infoNCE={:.4f}, infoNCE_neg={:.4f}, L_supcon={:.4f}' \
+                    'infoNCE={:.4f}, infoNCE_neg={:.4f}, L_supcon={:.4f}, L_meta_lstm={:.4f}' \
                     .format(epoch, i, len(train_loader) * args.num_task, \
                     loss_meta.item()/args.num_task, loss_globalclassifier.item()/args.num_task, loss_taskclassifier.item()/args.num_task, \
-                    loss_infoNCE.item()/args.num_task, loss_infoNCE_neg.item()/args.num_task, loss_sup_con.item()/args.num_task))
+                    loss_infoNCE.item()/args.num_task, loss_infoNCE_neg.item()/args.num_task, loss_sup_con.item()/args.num_task, loss_meta_lstm.item()/args.num_task))
 
                 logger.log(loss_sentence)
 
@@ -194,39 +223,37 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
     std = (1.96 * np.std(accs, ddof=1) / np.sqrt(len(train_loader))) * 100
 
     logger.log('Train set few-shot acc={:.4f}±{:.4f}'.format(mean, std))
+    logger.log('Task classifier acc={:.4f}±{:.4f}'.format(mean, std))
     lr_scheduler.step()
 
 
 def val(args, epoch, val_loader, model, logger):
     model.eval()
 
-    val_loss = Averager()
-    val_acc = Averager()
+    # val_loss = Averager()
+    # val_acc = Averager()
 
     accs = []
+
     for i, task in enumerate(val_loader, 1):
-        images, labels_all, path, method = [_ for _ in task]
+        images, images_aug, labels_all, path, method = [_ for _ in task]
         label_category = np.array(labels_all)[:5]
         images = images.cuda()
         p = args.shot * args.test_way
         s1, q1 = images[:p], images[p:]
 
         logits_meta, labels_meta = model(s1, q1, s1, label_category)
-        loss_meta = F.cross_entropy(logits_meta, labels_meta)
-        acc = count_acc(logits_meta, labels_meta)
 
-        val_loss.add(loss_meta.item())
-        val_acc.add(acc)
-        accs.append(acc)
+        # loss_meta = F.cross_entropy(logits_meta, labels_meta)
+        accs.append(count_acc(logits_meta, labels_meta))
 
-    loss_meta = val_loss.item()
-    mean = np.mean(accs) * 100
-    std = (1.96 * np.std(accs, ddof=1) / np.sqrt(len(val_loader))) * 100
+        # val_loss.add(loss_meta.item())
+        # val_acc.add(acc)
 
-    logger.log('epoch {}, loss-images={:.4f} acc={:.4f}±{:.4f}' \
-        .format(epoch, loss_meta, mean, std))
-    
-    return mean
+    # loss_meta = val_loss.item()
+    # std = (1.96 * np.std(accs, ddof=1) / np.sqrt(len(val_loader))) * 100
+
+    logger.log('epoch {}, acc={:.4f}'.format(epoch, np.mean(accs) * 100))
 
 
 if __name__ == '__main__':

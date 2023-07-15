@@ -84,9 +84,32 @@ class ValSampler():
             yield self.all_tasks[i_batch]
 
 
+from PIL import ImageFilter
+class GaussianBlur(object):
+    """Gaussian blur augmentation in SimCLR https://arxiv.org/abs/2002.05709"""
+
+    def __init__(self, sigma=[0.1, 2.0]):
+        self.sigma = sigma
+
+    def __call__(self, x):
+        sigma = random.uniform(self.sigma[0], self.sigma[1])
+        x = x.filter(ImageFilter.GaussianBlur(radius=sigma))
+        return x
+
+class TwoCropsTransform:
+    """Take two random crops of one image as the query and key."""
+
+    def __init__(self, base_transform):
+        self.base_transform = base_transform
+
+    def __call__(self, x):
+        q = self.base_transform(x)
+        k = self.base_transform(x)
+        return [q, k]
+
 class MiniImageNet(Dataset):
 
-    def __init__(self, setname, data_path, twice_sample):
+    def __init__(self, setname, data_path, twice_sample, data_aug):
         csv_path = osp.join(data_path, setname + '.csv')
         lines = [x.strip() for x in open(csv_path, 'r').readlines()][1:]
 
@@ -117,6 +140,24 @@ class MiniImageNet(Dataset):
                                     std=[0.229, 0.224, 0.225])
             ])
         self.twice_sample = twice_sample
+        self.data_aug = data_aug
+        if self.data_aug:   
+            normalize = transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                )
+            augmentation = [
+                        transforms.RandomResizedCrop(84, scale=(0.2, 1.0)),
+                        transforms.RandomApply(
+                            [transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8  # not strengthened
+                        ),
+                        transforms.RandomGrayscale(p=0.2),
+                        transforms.RandomApply([GaussianBlur([0.1, 2.0])], p=0.5),
+                        transforms.RandomHorizontalFlip(),
+                        transforms.ToTensor(),
+                        normalize,
+                    ]
+            self.transform_simCLR = TwoCropsTransform(transforms.Compose(augmentation))
+
         self.lines = [x.strip().split(',') for x in open(csv_path, 'r').readlines()][1:]
 
     def __len__(self):
@@ -130,6 +171,13 @@ class MiniImageNet(Dataset):
             method = -1
         path, label = self.data[i], self.label[i]
 
+        with open(path, "rb") as f:
+            img1 = Image.open(f)
+            img1 = img1.convert("RGB")
+        image1 = self.transform(img1)
+
+        result = [image1, label, path, method]
+
         if self.twice_sample == True:
             index = random.randint(int(label)*600, (int(label)+1)*600 - 1) 
             new_path = osp.join(self.data_path, 'images', self.lines[index][0])
@@ -138,21 +186,18 @@ class MiniImageNet(Dataset):
                 index = random.randint(int(label)*600, (int(label)+1)*600 - 1)
                 new_path = osp.join(self.data_path, 'images', self.lines[index][0])
 
-            with open(path, "rb") as f:
-                img1 = Image.open(f)
-                img1 = img1.convert("RGB")
             with open(new_path, "rb") as f:
                 img2 = Image.open(f)
                 img2 = img2.convert("RGB")
-            image1 = self.transform(img1)
+            
             image2 = self.transform(img2)
-            return [image1, image2], label, path, method
-        else:
-            with open(path, "rb") as f:
-                img = Image.open(f)
-                img = img.convert("RGB")
-            image = self.transform(img)
-            return image, label, path, method
+            result[0] = [result[0], image2]
+            result[2]= [path, new_path]
+
+        if self.data_aug:
+            images_aug = self.transform_simCLR(img1)
+            result.insert(1, images_aug)
+        return result
 
 
 def set_env(seed):
