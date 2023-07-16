@@ -44,7 +44,7 @@ class blstm_tasker(Tasker):
     def get_feature(self, x):
         #(5, 1, 512) (2, 1, 256) (2, 1, 256)
         output, hn, cn = self.lstm(x.unsqueeze(1)) # (5, 1, 1600) ——> (2, 256)
-        feat_t = cn.mean(dim = 0) # (1, 256)
+        feat_t = hn.mean(dim = 0) # (1, 256)
         return output, feat_t
     
     def forward(self, x):

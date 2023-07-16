@@ -38,7 +38,9 @@ class TrainSampler():
                 methods = []
                 samples = []
                 # classes = torch.randperm(len(self.m_ind))[:self.n_cls]
-                method = random.randint(0, 99)
+                method = random.randint(0, 127)
+                combination = config.combinations[method]
+                random.shuffle(combination)
                 classes = torch.tensor(config.combinations[method])
                 for c in classes:
                     l = self.m_ind[c]
