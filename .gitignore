@@ -3,6 +3,7 @@ output/
 *.pth
 test*
 config.py
+val.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
