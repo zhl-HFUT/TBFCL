@@ -1,10 +1,3 @@
-work_dir = '/root/code/TBFCL'
-
-data_path = '/root/code/mini-imagenet'
-save_path = '/root/code/TBFCL/output'
-num_workers = 8
-pretrain_conv4 = '/root/code/TBFCL/checkpoints/conv4-pretrain.pth'
-
 combinations = [[10, 22, 24, 45, 60], 
 [2, 3, 13, 32, 50], 
 [17, 23, 39, 50, 56], 

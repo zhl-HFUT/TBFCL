@@ -2,6 +2,7 @@ output/
 *.ipynb
 *.pth
 test*
+config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

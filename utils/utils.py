@@ -12,15 +12,18 @@ import numpy as np
 
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import config
+import combinations
 
 class TrainSampler():
 
-    def __init__(self, label, n_batch, n_cls, n_per, n_task):
+    def __init__(self, label, n_batch, n_cls, n_per, n_task, sample_method):
         self.n_batch = n_batch
         self.n_cls = n_cls
         self.n_per = n_per
         self.n_task = n_task
+        self.sample_method = sample_method
+        if self.sample_method:
+            self.combinations = combinations.combinations
 
         label = np.array(label)
         self.m_ind = []
@@ -37,11 +40,14 @@ class TrainSampler():
             for i in range(self.n_task):
                 methods = []
                 samples = []
-                # classes = torch.randperm(len(self.m_ind))[:self.n_cls]
-                method = random.randint(0, 127)
-                combination = config.combinations[method]
-                random.shuffle(combination)
-                classes = torch.tensor(config.combinations[method])
+                if self.sample_method:
+                    method = random.randint(0, 127)
+                    combination = self.combinations[method]
+                    random.shuffle(combination)
+                    classes = torch.tensor(self.combinations[method])
+                else:
+                    classes = torch.randperm(len(self.m_ind))[:self.n_cls]
+                    method = 1024
                 for c in classes:
                     l = self.m_ind[c]
                     pos = torch.randperm(len(l))[:self.n_per]
@@ -170,7 +176,7 @@ class MiniImageNet(Dataset):
             i, method = keys
         except:
             i = keys
-            method = -1
+            method = torch.tensor(1024)
         path, label = self.data[i], self.label[i]
 
         with open(path, "rb") as f:

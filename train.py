@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from module.convnet import Convnet
 from moco import MoCo
 import utils.config as config
-from utils.utils import (Averager, Timer, count_acc, set_env, MiniImageNet, TrainSampler, load_pretrain, ValSampler)
+from utils.utils import (Timer, count_acc, set_env, MiniImageNet, TrainSampler, load_pretrain, ValSampler)
 from utils.logger import Logger
 from utils.backup import backup_code
 from torch.utils.data import DataLoader
@@ -17,8 +17,9 @@ def main():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--id', type=str, default='test_716hn')
+    parser.add_argument('--id', type=str, default='debug')
     parser.add_argument('--pretrain', action='store_true')
+    parser.add_argument('--sample_method', action='store_true')
 
     # 'mean_tasker' ; 'img0_tasker' ; 'vit_tasker' : 'blstm_tasker'
     parser.add_argument('--tasker', type=str, default='blstm_tasker')
@@ -64,7 +65,7 @@ def main():
 
     trainset = MiniImageNet('train', config.data_path, twice_sample=True, data_aug=False)
 
-    train_sampler = TrainSampler(trainset.label, 100, args.train_way, args.shot + args.query, args.num_task)
+    train_sampler = TrainSampler(trainset.label, 100, args.train_way, args.shot + args.query, args.num_task, args.sample_method)
     train_loader = DataLoader(dataset=trainset, batch_sampler=train_sampler, num_workers=config.num_workers, pin_memory=True)
 
     model = MoCo(Convnet, args.tasker, args.memory_size, args.param_momentum, args.temperature, args.use_mlp).cuda()
@@ -136,6 +137,9 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
 
                 acc = count_acc(logits_meta, labels_meta)
                 accs.append(acc)
+                top1_predicted = torch.topk(logits_taskclassifier, 1).indices
+                is_correct = method[0].item() in top1_predicted.tolist()
+                task_cls_acc += is_correct
 
                 sims = torch.tensor(sims).cuda()
                 pure_index = torch.tensor(pure_index).cuda()
@@ -175,9 +179,7 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
 
             model._momentum_update_key_encoder()
 
-            top1_predicted = torch.topk(logits_taskclassifier, 1).indices
-            is_correct = method[0].item() in top1_predicted.tolist()
-            task_cls_acc += is_correct
+
             if i % 30 == 0:
                 logger.log('epoch {}, train {}/{}, L_meta={:.4f}, L_taskcls={:.4f}, '
                     'infoNCE={:.4f}, infoNCE_neg={:.4f}, L_supcon={:.4f}' \
@@ -201,7 +203,7 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
     std = (1.96 * np.std(accs, ddof=1) / np.sqrt(len(train_loader))) * 100
 
     logger.log('Train set few-shot acc={:.4f}±{:.4f}'.format(mean, std))
-    logger.log(f'Task classifier acc={task_cls_acc}/600'.format(mean, std))
+    logger.log(f'Task classifier acc={task_cls_acc}/{len(train_loader) * args.num_task}')
     lr_scheduler.step()
 
 
