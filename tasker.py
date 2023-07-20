@@ -59,11 +59,12 @@ class vit_tasker(Tasker):
         self.vit = VisionTransformer(
                               embed_dim=1600,
                               depth=2,
-                              num_heads=16,
+                              num_heads=4,
                               ).cuda()
 
     def forward(self, x):
         vit_output = self.vit(x.unsqueeze(0)).squeeze(0)  # (5, 1600)--(1, 5, 1600)--(1, 6, 1600)--(6, 1600)
-        cls_token = vit_output[0] # (1600)
+        cls_token = vit_output[0].unsqueeze(0) # (1, 1600)
+        # print(cls_token.shape)
         feat_s = vit_output[1:] # (5, 1600)
-        return feat_s, cls_token
+        return cls_token, feat_s

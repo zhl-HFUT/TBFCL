@@ -118,6 +118,7 @@ class TwoCropsTransform:
 class MiniImageNet(Dataset):
 
     def __init__(self, setname, data_path, twice_sample, data_aug):
+        self.setname = setname
         csv_path = osp.join(data_path, setname + '.csv')
         lines = [x.strip() for x in open(csv_path, 'r').readlines()][1:]
 

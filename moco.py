@@ -45,6 +45,9 @@ class MoCo(nn.Module):
         if isinstance(self.tasker_A, blstm_tasker):
             for param, param_k in zip(self.tasker_A.parameters(), self.tasker_B.parameters()):
                 param_k.data = param_k.data * self.m + param.data * (1. - self.m)
+        if isinstance(self.tasker_A, vit_tasker):
+            for param, param_k in zip(self.tasker_A.parameters(), self.tasker_B.parameters()):
+                param_k.data = param_k.data * self.m + param.data * (1. - self.m)
 
     @torch.no_grad()
     def _dequeue_and_enqueue(self, key, key_cls):
