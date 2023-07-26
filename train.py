@@ -22,7 +22,7 @@ def main():
 
     parser.add_argument('--id', type=str, default='debug')
     parser.add_argument('--pretrain', action='store_true')
-    parser.add_argument('--sample_method', action='store_true')
+    parser.add_argument('--sample_method', default=False)
 
     # 'mean_tasker' ; 'img0_tasker' ; 'vit_tasker' : 'blstm_tasker'
     parser.add_argument('--tasker', type=str, default='blstm_tasker')
@@ -33,7 +33,7 @@ def main():
     parser.add_argument('--use_loss_infoNCE', action='store_true')
     parser.add_argument('--use_loss_infoNCE_neg', action='store_true')
     parser.add_argument('--use_loss_sup_con', action='store_true')
-    parser.add_argument('--use_loss_meta_lstm', action='store_true')
+    parser.add_argument('--use_loss_blstm_meta', action='store_true')
 
     parser.add_argument('--use_mlp', action='store_true')
 
@@ -55,6 +55,7 @@ def main():
     parser.add_argument('--num_task', type=int, default=6)
 
     args = parser.parse_args()
+    args.sample_method = args.use_loss_taskclassifier
 
     backup_code(os.path.dirname(os.path.abspath(__file__)), os.path.join(config.save_path, args.id, 'code'))
     os.makedirs(os.path.join(config.save_path, args.id, 'ckpt'), exist_ok = True)
@@ -68,7 +69,7 @@ def main():
 
     trainset = MiniImageNet('train', config.data_path, twice_sample=True, data_aug=False)
 
-    train_sampler = TrainSampler(trainset.label, 100, args.train_way, args.shot + args.query, args.num_task, args.sample_method)
+    train_sampler = TrainSampler(trainset.label, 200, args.train_way, args.shot + args.query, args.num_task, args.sample_method)
     train_loader = DataLoader(dataset=trainset, batch_sampler=train_sampler, num_workers=config.num_workers, pin_memory=True)
 
     model = MoCo(Convnet, args.tasker, args.memory_size, args.param_momentum, args.temperature, args.use_mlp).cuda()
@@ -118,6 +119,7 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
             loss_meta = 0
             loss_taskclassifier = 0
             # loss_globalclassifier = 0
+            loss_blstm_meta = 0
             loss_infoNCE = 0
             loss_infoNCE_neg = 0
             loss_sup_con = 0
@@ -132,11 +134,13 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
                 s1, q1 = images[0][:p], images[0][p:]
                 s2 = images[1][:p]
 
-                logits_meta, labels_meta, logits_taskclassifier, metrics, sims, pure_index = model(s1, q1, s2, label)
+                logits_meta, labels_meta, logits_taskclassifier, metrics, sims, pure_index, logits_blstm_meta = model(s1, q1, s2, label)
 
                 loss_meta = loss_meta + F.cross_entropy(logits_meta, labels_meta)
                 # loss_globalclassifier = loss_globalclassifier + F.cross_entropy(logits_globalclassifier, label_category)
                 loss_taskclassifier = loss_taskclassifier + F.cross_entropy(logits_taskclassifier, method[0].cuda())
+
+                loss_blstm_meta = loss_blstm_meta + F.cross_entropy(logits_blstm_meta, labels_meta)
 
                 acc = count_acc(logits_meta, labels_meta)
                 accs.append(acc)
@@ -157,16 +161,19 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
 
                 loss_infoNCE = loss_infoNCE + F.cross_entropy(metrics, label_moco)
                 loss_infoNCE_neg = loss_infoNCE_neg + F.cross_entropy(torch.index_select(metrics, 0, pure_index), label_moco)
-                loss_sup_con = loss_sup_con - (torch.log(torch.exp(torch.index_select(metrics, 0, pos_index)) / metric_exp_sum) * torch.index_select(sims, 0, pos_index)).sum()/weight_sum
+                loss_sup_con = loss_sup_con \
+                - (torch.log(torch.exp(torch.index_select(metrics, 0, pos_index)) / metric_exp_sum) * torch.index_select(sims, 0, pos_index)).sum()/weight_sum
 
             losses = {
                         'loss_meta': (loss_meta/args.num_task, 1.0),
                         'loss_taskclassifier': (loss_taskclassifier/args.num_task, 1.0),
                         # 'loss_globalclassifier': (loss_globalclassifier/args.num_task, 1.0),
+                        'loss_blstm_meta': (loss_blstm_meta/args.num_task, 1.0),
                         'loss_infoNCE': (loss_infoNCE/args.num_task, 1.0),
                         'loss_infoNCE_neg': (loss_infoNCE_neg/args.num_task, 1.0),
                         'loss_sup_con': (loss_sup_con/args.num_task, 1.0)
                     }
+            # print(loss_meta, loss_taskclassifier, loss_blstm_meta, loss_infoNCE, loss_infoNCE_neg, loss_sup_con)
             
             loss_terms = []
             for loss_name, (loss_value, loss_weight) in losses.items():
@@ -185,10 +192,10 @@ def train(args, epoch, train_loader, model, optimizer, lr_scheduler, logger):
 
             if i % 30 == 0:
                 logger.log('epoch {}, train {}/{}, L_meta={:.4f}, L_taskcls={:.4f}, '
-                    'infoNCE={:.4f}, infoNCE_neg={:.4f}, L_supcon={:.4f}' \
+                    'infoNCE={:.4f}, infoNCE_neg={:.4f}, L_supcon={:.4f}, L_b_m={:.4f}' \
                     .format(epoch, i, len(train_loader) * args.num_task, \
                     loss_meta.item()/args.num_task, loss_taskclassifier.item()/args.num_task, \
-                    loss_infoNCE.item()/args.num_task, loss_infoNCE_neg.item()/args.num_task, loss_sup_con.item()/args.num_task))
+                    loss_infoNCE.item()/args.num_task, loss_infoNCE_neg.item()/args.num_task, loss_sup_con.item()/args.num_task, loss_blstm_meta.item()/args.num_task))
 
                 logger.log(loss_sentence)
 
@@ -225,7 +232,7 @@ def val(args, epoch, val_loader, model, logger):
         p = args.shot * args.test_way
         s1, q1 = images[:p], images[p:]
 
-        logits_meta, labels_meta = model(s1, q1, s1, label_category)
+        logits_meta, labels_meta, logits_blstm_meta = model(s1, q1, s1, label_category)
 
         # loss_meta = F.cross_entropy(logits_meta, labels_meta)
         accs.append(count_acc(logits_meta, labels_meta))

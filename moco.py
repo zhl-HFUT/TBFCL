@@ -70,7 +70,7 @@ class MoCo(nn.Module):
         # logits_globalclassifier = self.fc(feat_support_A)
 
         # anchor feat_task
-        feat_task_A, _ = self.tasker_A(feat_support_A)
+        feat_task_A, blstm_output_A = self.tasker_A(feat_support_A)
         feat_task_A = nn.functional.normalize(feat_task_A, dim=1) # (1, 256)
 
         # for meta learning
@@ -80,6 +80,14 @@ class MoCo(nn.Module):
         logits_meta = torch.mm(feat_query_A, feat_support_A.t())
 
         # for extra blstm output
+        tensor_list = []
+        for feat in feat_query_A:
+            _, blstm_query = self.tasker_A(feat.unsqueeze(0))
+            tensor_list.append(blstm_query)
+        stacked_tensor = torch.stack(tensor_list)
+        reshaped_tensor = stacked_tensor.view(75, 512)
+        logits_blstm_meta = torch.mm(reshaped_tensor, blstm_output_A.t())
+        # accs4.append(count_acc(logits_blstm, labels_meta))
         # _, blstm_output_q = self.tasker(feat_q)
         # logits_meta_lstm = torch.mm(blstm_output_q, blstm_output_s.t())
 
@@ -105,7 +113,7 @@ class MoCo(nn.Module):
                 if not bool(len(np.intersect1d(self.classes[i,:], key_cls))):
                     pure_index.append(i+1)
             self._dequeue_and_enqueue(feat_task_B, key_cls)
-            return logits_meta, labels_meta, logits_taskclassifier, metrics, sims, pure_index
+            return logits_meta, labels_meta, logits_taskclassifier, metrics, sims, pure_index, logits_blstm_meta
 
         else:
             # feat_s, feat_t = self.tasker(feat_s)
@@ -113,4 +121,4 @@ class MoCo(nn.Module):
             # feat_s_external = nn.functional.normalize(feat_s_external, dim=1)
             # feat_q_external = self.model_external(query_A)
             # logits_external = torch.mm(feat_q_external, feat_s_external.t())
-            return logits_meta, labels_meta
+            return logits_meta, labels_meta, logits_blstm_meta

@@ -41,7 +41,7 @@ class TrainSampler():
                 methods = []
                 samples = []
                 if self.sample_method:
-                    method = random.randint(0, 127)
+                    method = random.randint(0, 99)
                     combination = self.combinations[method]
                     random.shuffle(combination)
                     classes = torch.tensor(self.combinations[method])
@@ -208,6 +208,13 @@ class MiniImageNet(Dataset):
             result.insert(1, images_aug)
         return result
 
+def euclidean_metric(a, b):
+    n = a.shape[0]
+    m = b.shape[0]
+    a = a.unsqueeze(1).expand(n, m, -1)
+    b = b.unsqueeze(0).expand(n, m, -1)
+    logits = -((a - b)**2).sum(dim=2)
+    return logits
 
 def set_env(seed):
     random.seed(seed)
@@ -224,14 +231,29 @@ def set_env(seed):
 def set_gpu(x):
     os.environ['CUDA_VISIBLE_DEVICES'] = x
 
-def load_pretrain(model, pth_path):
-    model_dict = model.state_dict()        
-    pretrained_dict = torch.load(pth_path)['params']
-    pretrained_dict = {'encoder.'+k: v for k, v in pretrained_dict.items()}
-    pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-    print(pretrained_dict.keys())
-    model_dict.update(pretrained_dict)
-    model.load_state_dict(model_dict)
+def load_pretrain(model, pth_path1):
+    # model_dict = model.state_dict()        
+    # pretrained_dict = torch.load(pth_path1)['params']
+    # pretrained_dict = {'encoder.'+k: v for k, v in pretrained_dict.items()}
+    # pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+    # print(pretrained_dict.keys())
+    # model_dict.update(pretrained_dict)
+    # model.load_state_dict(model_dict)
+
+    model_dict1 = torch.load(pth_path1)['params']
+    conv4_A_dict = {k: v for k, v in model_dict1.items() if k[:8] == 'encoder.'}
+    conv4_A_dict = {k: v for k, v in conv4_A_dict.items() if k in model.encoder.state_dict()}
+    print(conv4_A_dict.keys())
+    model.encoder.load_state_dict(conv4_A_dict)
+    model.encoder_B.load_state_dict(conv4_A_dict)
+
+    # model_dict2 = torch.load(pth_path2).state_dict()
+    # tasker_A_dict = {k[9:]: v for k, v in model_dict2.items() if k[:9] == 'tasker_A.'}
+    # tasker_A_dict = {k: v for k, v in tasker_A_dict.items() if k in model.tasker_A.state_dict()}
+    # print(tasker_A_dict.keys())
+    # model.tasker_A.load_state_dict(tasker_A_dict)
+    # model.tasker_B.load_state_dict(tasker_A_dict)
+
     return model
 
 class Averager():

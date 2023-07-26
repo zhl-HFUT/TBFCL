@@ -1,13 +1,14 @@
 from module.blstm import BidirectionalLSTM
 from module.vit import VisionTransformer
 import torch.nn as nn
+import torch
 
 class Tasker(nn.Module):
     def __init__(self, dim, use_mlp):
         super(Tasker, self).__init__()
         self.dim = dim
         self.use_mlp = use_mlp
-        self.fc = nn.Linear(self.dim, 128)
+        self.fc = nn.Linear(self.dim, 100)
         if use_mlp:
             self.mlp = nn.Sequential(
                 nn.Linear(dim, dim*2), nn.ReLU(), nn.Linear(dim*2, dim)
@@ -39,12 +40,17 @@ class mean_tasker(Tasker):
 class blstm_tasker(Tasker):
     def __init__(self, use_mlp, dim=256):
         super(blstm_tasker, self).__init__(dim, use_mlp)
-        self.lstm = BidirectionalLSTM(layer_sizes=[self.dim], batch_size=1, vector_dim = 1600)
+        self.lstm = BidirectionalLSTM(layer_sizes=[dim], batch_size=1, vector_dim = 1600)
 
     def get_feature(self, x):
         #(5, 1, 512) (2, 1, 256) (2, 1, 256)
         output, hn, cn = self.lstm(x.unsqueeze(1)) # (5, 1, 1600) ——> (2, 256)
+        # print(output.shape, hn.shape, cn.shape)
         feat_t = hn.mean(dim = 0) # (1, 256)
+
+        # maxpooling
+        # feat_t, _ =  torch.max(output, dim=0) # (1, 512)
+        # print(feat_t.shape)
         return output, feat_t
     
     def forward(self, x):
