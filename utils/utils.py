@@ -32,6 +32,8 @@ class TrainSampler():
             ind = torch.from_numpy(ind)
             self.m_ind.append(ind)
 
+        self.flag = 0
+
     def __len__(self):
         return self.n_batch
 
@@ -46,8 +48,29 @@ class TrainSampler():
                     random.shuffle(combination)
                     classes = torch.tensor(self.combinations[method])
                 else:
-                    classes = torch.randperm(len(self.m_ind))[:self.n_cls]
-                    method = 1024
+                    if self.flag == 0:
+                        self.classes_all = torch.randperm(len(self.m_ind))
+                        self.classes = self.classes_all[:self.n_cls]
+                        classes = self.classes
+                        self.flag = 1
+                    elif self.flag == 1:
+                        replace_class_1 = self.classes_all[5]
+                        shuffle_indices1 = torch.randperm(5)
+                        shuffle_classes1 = self.classes[shuffle_indices1]
+                        replace_classes_1 = shuffle_classes1
+                        replace_classes_1[shuffle_indices1[0]] = replace_class_1
+                        classes = replace_classes_1
+                        self.flag = 2
+                    elif self.flag == 2:
+                        replace_class_2 = self.classes_all[6:8]
+                        shuffle_indices2 = torch.randperm(5)
+                        shuffle_classes2 = self.classes[shuffle_indices2]
+                        replace_classes_2 = shuffle_classes2
+                        replace_classes_2[shuffle_indices2[0:2]] = replace_class_2
+                        classes = replace_classes_2
+                        self.flag = 0
+                    method = 0
+                    print(classes)
                 for c in classes:
                     l = self.m_ind[c]
                     pos = torch.randperm(len(l))[:self.n_per]
